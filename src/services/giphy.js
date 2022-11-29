@@ -1,23 +1,37 @@
-const baseUrl = 'https://api.giphy.com/v1/gifs/search'
-const api_key = 'IHUvzk5QRjDCepiwICoyVEvfUSGzw2py'
+import { API_KEY, BASE_URL } from './settings'
 
-const getGifs = ({ query }) => {
-  return fetch(
-    baseUrl +
-      `?api_key=${api_key}&limit=10&offset=0&rating=g&lang=es&q=${query}`
-  )
-    .then((res) => res.json())
-    .then((response) => {
-      const { data } = response
-      const gifts = data.map((info) => {
-        const { id, images, title } = info
-        const { url } = images.downsized_medium
-        return { id, title, url }
-      })
-      return gifts
+const fromResponseToGifs = (apiResponse) => {
+  const { data = [] } = apiResponse
+  if (Array.isArray(data)) {
+    const gifs = data.map((info) => {
+      const { id, images, title } = info
+      const { url } = images.downsized_medium
+      return { id, title, url }
     })
+    return gifs
+  }
+
+  return []
 }
 
-const giphy = { getGifs }
+const getGifs = ({ limit = 10, query, page = 0 }) => {
+  const apiURL = `${BASE_URL}/search?api_key=${API_KEY}&limit=${limit}&offset=${
+    page * limit
+  }&rating=g&lang=es&q=${query}`
+
+  return fetch(apiURL)
+    .then((res) => res.json())
+    .then(fromResponseToGifs)
+}
+
+const getTrendingGifs = () => {
+  return fetch(
+    `${BASE_URL}/trending?api_key=${API_KEY}&limit=10&offset=0&rating=g&lang=es`
+  )
+    .then((res) => res.json())
+    .then(fromResponseToGifs)
+}
+
+const giphy = { getGifs, getTrendingGifs }
 
 export default giphy

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'wouter'
 import GifList from '../../components/GifList'
+import Trending from '../../components/Trending'
 import useGifs from '../../hooks/useGifs'
 
 const Home = () => {
@@ -44,6 +45,8 @@ const Home = () => {
         <h3 className="my-4">Última búsqueda</h3>
 
         {loading ? <p>spiner</p> : <GifList gifs={gifs}></GifList>}
+
+        <Trending />
       </div>
     </>
   )
